@@ -15,6 +15,7 @@ import org.bson.Document;
 
 import java.io.Serializable;
 
+import io.realm.Realm;
 import io.realm.mongodb.App;
 import io.realm.mongodb.AppConfiguration;
 import io.realm.mongodb.User;
@@ -38,7 +39,7 @@ public class Home extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
+        Realm.init(this);
         SharedPreferences sharePref= PreferenceManager.getDefaultSharedPreferences(this);
         emailAd=sharePref.getString("email",null);
 
@@ -78,7 +79,6 @@ public class Home extends AppCompatActivity {
 
     public void goQR(View view){
         Intent intent=new Intent(this, QrView.class);
-        intent.putExtra("User", (Serializable) eUser);
         startActivity(intent);
     }
 
@@ -90,7 +90,6 @@ public class Home extends AppCompatActivity {
 
     public void goSearch(View view){
         Intent intent=new Intent(this, Search.class);
-        intent.putExtra("User", (Serializable) eUser);
         startActivity(intent);
     }
 

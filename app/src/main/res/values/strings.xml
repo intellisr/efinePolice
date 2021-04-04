@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">eFinePolice</string>
+
+    <string-array name="TypeArray">
+        <item>Alchole</item>
+        <item>Road rash</item>
+        <item>MY</item>
+        <item>Other</item>
+    </string-array>
 </resources>
