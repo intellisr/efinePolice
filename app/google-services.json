@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "537131537199",
+    "project_id": "efine-20454",
+    "storage_bucket": "efine-20454.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:537131537199:android:ffa6d1954383781a3947da",
+        "android_client_info": {
+          "package_name": "com.google.efinepolice"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "537131537199-fs83c6k58u7jupse6nci37t2n6rn98n6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCT8lGQiI50iQlpGxqevM74y_tJC38zugk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "537131537199-fs83c6k58u7jupse6nci37t2n6rn98n6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

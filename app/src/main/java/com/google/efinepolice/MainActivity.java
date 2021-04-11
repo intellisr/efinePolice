@@ -1,5 +1,6 @@
 package com.google.efinepolice;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -11,8 +12,16 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.FirebaseException;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthOptions;
+import com.google.firebase.auth.PhoneAuthProvider;
+
 import org.bson.Document;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.realm.Realm;
@@ -36,11 +45,16 @@ public class MainActivity extends AppCompatActivity {
     private String emailAd;
     public String Email;
     public String PW;
+    private FirebaseAuth mAuth;
+    private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user=mAuth.getCurrentUser();
 
         email = findViewById(R.id.email);
         pw = findViewById(R.id.pw);
@@ -57,6 +71,20 @@ public class MainActivity extends AppCompatActivity {
             Intent intent=new Intent(this, Home.class);
             startActivity(intent);
         }
+
+        mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+            @Override
+            public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
+
+            }
+
+            @Override
+            public void onVerificationFailed(@NonNull FirebaseException e) {
+
+            }
+        };
+
+
 
     }
 
@@ -80,6 +108,9 @@ public class MainActivity extends AppCompatActivity {
                         Document resultdata = result.get();
 
                         if(Email.equals(resultdata.getString("Email"))){
+
+                            String pn=resultdata.getString("Phone");
+                            login2Factor(pn);
                             SharedPreferences sharePref= PreferenceManager.getDefaultSharedPreferences(this);
                             SharedPreferences.Editor editor = sharePref.edit();
                             editor.putString("email",Email);
@@ -100,5 +131,16 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("AUTH", it.getError().toString());
             }
         });
+    }
+    
+    public void login2Factor(String PhoneNumber){
+        PhoneAuthOptions options =
+                PhoneAuthOptions.newBuilder(mAuth)
+                        .setPhoneNumber(PhoneNumber)       // Phone number to verify
+                        .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                        .setActivity(this)                 // Activity (for callback binding)
+                        .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
+                        .build();
+        PhoneAuthProvider.verifyPhoneNumber(options);
     }
 }

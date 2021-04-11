@@ -22,8 +22,8 @@ import android.widget.Toast;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import java.security.Timestamp;
 import java.util.Date;
+
 
 import io.realm.mongodb.App;
 import io.realm.mongodb.AppConfiguration;
@@ -47,6 +47,9 @@ public class ReportViolation extends AppCompatActivity {
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
     private MongoCollection<Document> mongoCollection;
+    public Report report;
+
+    private static final int MY_CAMERA_REQUEST_CODE = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +75,8 @@ public class ReportViolation extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) {
-            return;
+
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION}, MY_CAMERA_REQUEST_CODE);
         }
 
         try {
@@ -100,29 +104,27 @@ public class ReportViolation extends AppCompatActivity {
         mongoCollection = mongoDatabase.getCollection("Report");
 
 
-
     }
 
 
     public void report(View view){
 
-            String violationType = type.getSelectedItem().toString();
+            String violationType = String.valueOf(type.getSelectedItemPosition());
             String dis = discription.getText().toString();
 
-            Report report = new Report(new ObjectId(),violationType,dis,licence,emailAd,latitude,longitude,new Date());
-            Log.v("SRA", "object " + report.getDescription());
-        mongoCollection.insertOne(report).getAsync(task -> {
-            if (task.isSuccess()) {
-                Toast.makeText(getApplicationContext(),"Reported Successfully",Toast.LENGTH_LONG).show();
-                Log.v("SRA", "successfully inserted a document with id: " + task.get().getInsertedId());
-                Intent intent = getIntent();
-                finish();
-                startActivity(intent);
-            } else {
-                Log.e("SRA", "failed to insert documents with: " + task.getError().getErrorMessage());
-                Toast.makeText(getApplicationContext(),"Something Wrong",Toast.LENGTH_LONG).show();
-            }
-        });
+            Document reportDoc  = new Document("_id", new ObjectId()).append("type", violationType).append("description", dis).append("licence", licence).append("police", emailAd).append("latitude", latitude).append("longitude", longitude).append("date", new Date()).append("paid", false);
+            mongoCollection.insertOne(reportDoc).getAsync(task -> {
+                if (task.isSuccess()) {
+                    Toast.makeText(getApplicationContext(),"Reported Successfully",Toast.LENGTH_LONG).show();
+                    Log.v("SRA", "successfully inserted a document with id: " + task.get().getInsertedId());
+                    Intent intent = getIntent();
+                    finish();
+                    startActivity(intent);
+                } else {
+                    Log.e("SRA", "failed to insert documents with: " + task.getError().getErrorMessage());
+                    Toast.makeText(getApplicationContext(),"Something Wrong",Toast.LENGTH_LONG).show();
+                }
+            });
 
     }
 
