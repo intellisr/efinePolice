@@ -23,17 +23,17 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="100dp"
+                android:layout_width="200dp"
                 android:layout_height="100dp"
                 android:padding="10dp"
-                android:src="@drawable/e"/>
+                android:src="@drawable/icon"/>
 
             <TextView
                 android:id="@+id/textView6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:text="Licence"
+                android:text=" - Licence"
                 android:textColor="@color/teal_700"
                 android:textSize="30sp"
                 android:textStyle="bold"/>

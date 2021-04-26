@@ -43,7 +43,7 @@ public class Home extends AppCompatActivity {
         SharedPreferences sharePref= PreferenceManager.getDefaultSharedPreferences(this);
         emailAd=sharePref.getString("email",null);
 
-        na = findViewById(R.id.textView6);
+        //na = findViewById(R.id.textView6);
 
         String appID = "efine-mjrwv"; // replace this with your App ID
         app = new App(new AppConfiguration.Builder(appID)
@@ -59,7 +59,7 @@ public class Home extends AppCompatActivity {
             if(result.isSuccess()) {
                 Document resultdata = result.get();
                 String txt="Hello "+resultdata.getString("Name");
-                na.setText(txt);
+                //na.setText(txt);
                 //eUser = new DrivingLicence(resultdata.getString("LicenceNo"),resultdata.getString("NIC"),resultdata.getString("Name"),resultdata.getString("Surname"),resultdata.getString("Address"),resultdata.getString("DOB"),resultdata.getString("Issued"),resultdata.getString("Expired"),resultdata.getString("BloodGroup"),resultdata.getBoolean("Spectacles"));
                 eUser = new PoliceUser(resultdata.getString("Email"),resultdata.getString("idNo"),resultdata.getString("Name"),resultdata.getString("rankNo"));
                 Log.v("DATA", "Name: " + eUser.getName());
@@ -98,6 +98,9 @@ public class Home extends AppCompatActivity {
         SharedPreferences.Editor editor = sharePref.edit();
         editor.putString("email",null);
         editor.apply();
+        //user.logOut();
+        Intent intent=new Intent(this, MainActivity.class);
+        startActivity(intent);
 
     }
 }

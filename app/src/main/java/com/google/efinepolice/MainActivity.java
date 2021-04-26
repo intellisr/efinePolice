@@ -106,11 +106,7 @@ public class MainActivity extends AppCompatActivity {
                 mongoCollection.findOne(queryFilter).getAsync(result -> {
                     if(result.isSuccess()) {
                         Document resultdata = result.get();
-
                         if(Email.equals(resultdata.getString("Email"))){
-
-                            String pn=resultdata.getString("Phone");
-                            login2Factor(pn);
                             SharedPreferences sharePref= PreferenceManager.getDefaultSharedPreferences(this);
                             SharedPreferences.Editor editor = sharePref.edit();
                             editor.putString("email",Email);
@@ -133,14 +129,5 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     
-    public void login2Factor(String PhoneNumber){
-        PhoneAuthOptions options =
-                PhoneAuthOptions.newBuilder(mAuth)
-                        .setPhoneNumber(PhoneNumber)       // Phone number to verify
-                        .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
-                        .setActivity(this)                 // Activity (for callback binding)
-                        .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
-                        .build();
-        PhoneAuthProvider.verifyPhoneNumber(options);
-    }
+
 }
