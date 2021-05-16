@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,10 +15,12 @@ import org.bson.Document;
 
 import io.realm.mongodb.App;
 import io.realm.mongodb.AppConfiguration;
+import io.realm.mongodb.RealmResultTask;
 import io.realm.mongodb.User;
 import io.realm.mongodb.mongo.MongoClient;
 import io.realm.mongodb.mongo.MongoCollection;
 import io.realm.mongodb.mongo.MongoDatabase;
+import io.realm.mongodb.mongo.iterable.MongoCursor;
 
 public class LicenceResult extends AppCompatActivity {
 
@@ -25,6 +29,7 @@ public class LicenceResult extends AppCompatActivity {
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
     private MongoCollection<Document> mongoCollection;
+    private MongoCollection<Document> mongoCollection2;
     public TextView li;
     public TextView nic;
     public TextView na;
@@ -36,7 +41,9 @@ public class LicenceResult extends AppCompatActivity {
     public TextView bGroup;
     public TextView spec;
     private String licenceNo;
-
+    public int count=0;
+    public TextView det;
+    public Button button;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,33 +70,59 @@ public class LicenceResult extends AppCompatActivity {
         expired = findViewById(R.id.expired);
         bGroup = findViewById(R.id.bgroup);
         spec = findViewById(R.id.spec);
+        button = findViewById(R.id.button);
+        det=findViewById(R.id.search);
+
+        button.setVisibility(View.INVISIBLE);
 
 
-        Document queryFilter = new Document().append("LicenceNo",licenceNo);
-        mongoCollection.findOne(queryFilter).getAsync(result -> {
-            if(result.isSuccess()) {
-                Document resultdata = result.get();
-                String txt="Hello "+resultdata.getString("Name");
-                li.setText("Licence No : "+resultdata.getString("LicenceNo"));
-                nic.setText("NIC No : "+resultdata.getString("NIC"));
-                na.setText("Name : "+resultdata.getString("Name"));
-                sna.setText("Surname : "+resultdata.getString("Surname"));
-                dob.setText("Date of birth : "+resultdata.getString("DOB"));
-                address.setText("Address : "+resultdata.getString("Address"));
-                issued.setText("Issued Date : "+resultdata.getString("Issued"));
-                expired.setText("Expired Date : "+resultdata.getString("Expired"));
-                bGroup.setText("Blood Group : "+resultdata.getString("BloodGroup"));
-                if(resultdata.getBoolean("Spectacles")){
-                    spec.setText("Spectacles Required");
+        mongoCollection2 = mongoDatabase.getCollection("Report");
+
+        Document queryFilter2  = new Document("licence", licenceNo).append("paid", false);
+        RealmResultTask<MongoCursor<Document>> findTask = mongoCollection2.find(queryFilter2).iterator();
+        findTask.getAsync(task -> {
+            if (task.isSuccess()) {
+                MongoCursor<Document> results = task.get();
+                Log.v("EXAMPLE", "successfully found all plants for Store 42:");
+
+                for (MongoCursor<Document> it = results; it.hasNext(); ) {
+                    Document result = it.next();
+                    count++;
                 }
 
-                Log.v("SRA", "Name: " + resultdata.getString("BloodGroup"));
+                Document queryFilter = new Document().append("LicenceNo",licenceNo);
+                mongoCollection.findOne(queryFilter).getAsync(result -> {
+                    if(result.isSuccess()) {
+                        Document resultdata = result.get();
 
+                        if(count >0){det.setText("Search Result : "+count+" pending payments");}else{det.setText("Search Result : No pending payments");}
+                        li.setText("Licence No : "+resultdata.getString("LicenceNo"));
+                        nic.setText("NIC No : "+resultdata.getString("NIC"));
+                        na.setText("Name : "+resultdata.getString("Name"));
+                        sna.setText("Surname : "+resultdata.getString("Surname"));
+                        dob.setText("Date of birth : "+resultdata.getString("DOB"));
+                        address.setText("Address : "+resultdata.getString("Address"));
+                        issued.setText("Issued Date : "+resultdata.getString("Issued"));
+                        expired.setText("Expired Date : "+resultdata.getString("Expired"));
+                        bGroup.setText("Blood Group : "+resultdata.getString("BloodGroup"));
+                        if(resultdata.getBoolean("Spectacles")){
+                            spec.setText("Spectacles Required");
+                        }
+                        button.setVisibility(View.VISIBLE);
+                        Log.v("SRA", "Name: " + resultdata.getString("BloodGroup"));
+
+                    } else {
+                        Toast.makeText(getApplicationContext(),"Not found",Toast.LENGTH_LONG).show();
+                        Log.v("SRA",result.getError().toString());
+                    }
+                });
             } else {
-                Toast.makeText(getApplicationContext(),"Not found",Toast.LENGTH_LONG).show();
-                Log.v("SRA",result.getError().toString());
+                Log.e("EXAMPLE", "failed to find documents with: ", task.getError());
             }
         });
+
+
+
 
     }
 

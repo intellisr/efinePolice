@@ -79,7 +79,7 @@ public class History extends AppCompatActivity {
                     Date date =result.getDate("date");
                     SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
                     String strDate = formatter.format(date);
-                        tv.setText(" <-| "+result.getString("type")+" | "+strDate+" |->");
+                        tv.setText(" You report "+result.getString("type")+" at "+strDate+"");
                         LL.addView(tv);
                 }
             } else {
